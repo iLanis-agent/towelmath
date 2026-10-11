@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Towel math - calculators</title>
+<style>
+  :root { --accent: #0077b6; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Georgia, 'Times New Roman', serif; background: #f3f7fa; color: #1d2429; line-height: 1.55; }
+  main { max-width: 1100px; margin: 0 auto; padding: 40px 20px 64px; }
+  h1 { font-size: 2rem; margin: 0 0 8px; color: var(--accent); }
+  .lede { margin: 0 0 28px; max-width: 640px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+  section { background: #fff; border: 1px solid #d4e0e8; border-radius: 8px; padding: 20px 22px; }
+  h2 { font-size: 1.15rem; margin: 0 0 6px; }
+  .hint { font-size: 0.9rem; color: #51656f; margin: 0 0 14px; }
+  label { display: block; font-size: 0.9rem; margin: 10px 0 3px; }
+  input { width: 100%; padding: 8px 10px; font-size: 1rem; border: 1px solid #b3c8d4; border-radius: 5px; font-family: inherit; }
+  button { margin-top: 16px; width: 100%; padding: 11px; background: var(--accent); color: #fff; border: 0; border-radius: 6px; font-size: 1rem; cursor: pointer; font-family: inherit; }
+  button:hover { filter: brightness(1.12); }
+  .out { margin-top: 14px; font-size: 1rem; min-height: 1.4em; }
+  .out.err { color: #a32222; }
+  footer { max-width: 1100px; margin: 0 auto; padding: 0 20px 40px; font-size: 0.85rem; color: #7c8890; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Towel math</h1>
+  <p class="lede">GSM to grams, grams to loads, loads to a yearly cost. Exact arithmetic, every borrowed number labeled.</p>
+  <div class="grid">
+    <section>
+      <h2>Weight plan</h2>
+      <p class="hint">Size and GSM become grams.</p>
+      <label for="w-w">Width (cm)</label>
+      <input id="w-w" type="number" value="70" min="0" step="5">
+      <label for="w-h">Height (cm)</label>
+      <input id="w-h" type="number" value="140" min="0" step="5">
+      <label for="w-g">GSM</label>
+      <input id="w-g" type="number" value="500" min="0" step="10">
+      <button id="w-go">Weigh the towel</button>
+      <div class="out" id="w-out"></div>
+    </section>
+    <section>
+      <h2>Load plan</h2>
+      <p class="hint">Grams become towels per load.</p>
+      <label for="l-g">One towel (g)</label>
+      <input id="l-g" type="number" value="490" min="0" step="10">
+      <label for="l-n">Towels in the pile</label>
+      <input id="l-n" type="number" value="20" min="0" step="1">
+      <label for="l-m">Machine capacity (kg)</label>
+      <input id="l-m" type="number" value="7" min="0" step="0.5">
+      <button id="l-go">Plan the loads</button>
+      <div class="out" id="l-out"></div>
+    </section>
+    <section>
+      <h2>Cost plan</h2>
+      <p class="hint">A habit becomes a yearly cost.</p>
+      <label for="c-l">Loads a week</label>
+      <input id="c-l" type="number" value="2" min="0" step="0.5">
+      <label for="c-c">Cost a load</label>
+      <input id="c-c" type="number" value="0.9" min="0" step="0.05">
+      <button id="c-go">Count the year</button>
+      <div class="out" id="c-out"></div>
+    </section>
+  </div>
+</main>
+<footer>Built by the app factory. <a href="index.html">About</a> &middot; <a href="https://github.com/iLanis-agent/towelmath">Source</a></footer>
+<script src="engine.js"></script>
+<script>
+function num(id){ return parseFloat(document.getElementById(id).value); }
+function show(id, r, render){
+  var el = document.getElementById(id);
+  if (r.error) { el.textContent = r.error; el.classList.add('err'); }
+  else { el.textContent = render(r); el.classList.remove('err'); }
+}
+document.getElementById('w-go').addEventListener('click', function(){
+  show('w-out', TowelMath.weightPlan(num('w-w'),num('w-h'),num('w-g')), TowelMath.renderWeight);
+});
+document.getElementById('l-go').addEventListener('click', function(){
+  show('l-out', TowelMath.loadPlan(num('l-g'),num('l-n'),num('l-m')), TowelMath.renderLoad);
+});
+document.getElementById('c-go').addEventListener('click', function(){
+  show('c-out', TowelMath.costPlan(num('c-l'),num('c-c')), TowelMath.renderCost);
+});
+</script>
+</body>
+</html>
